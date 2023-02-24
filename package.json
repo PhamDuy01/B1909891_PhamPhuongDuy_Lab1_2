@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
-  "scripts": {
+  "script": {
     "start": "modemon server.js"
   },
   "author": "Pham Phuong Duy",

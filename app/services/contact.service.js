@@ -1,9 +1,10 @@
 const { ObjectId } = require("mongodb");
+
 class ContactService {
     constructor(client) {
         this.Contact = client.db().collection("contacts");
     }
-// Định nghĩa các phương thức truy xuất CSDL sử dụng mongodb API
+
     extractConactData(payload) {
         const contact = {
             name: payload.name,
@@ -18,6 +19,7 @@ class ContactService {
         );
         return contact;
     }
+
     async create(payload) {
         const contact = this.extractConactData(payload);
         const result = await this.Contact.findOneAndUpdate(
@@ -25,25 +27,22 @@ class ContactService {
             { $set: { favorite: contact.favorite === true } },
             { returnDocument: "after", upsert: true }
         );
-            return result.value;
+        return result.value;
     }
     async find(filter) {
         const cursor = await this.Contact.find(filter);
         return await cursor.toArray();
-        }
-        async findByName(name) {
-            return await this.find({
+    }
+    async findByName(name) {
+        return await this.find({
             name: { $regex: new RegExp(name), $options: "i" },
-            });
-        }
-            
-
+        });
+    }
     async findById(id) {
         return await this.Contact.findOne({
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
         });
     }
-
     async update(id, payload) {
         const filter = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
@@ -58,17 +57,19 @@ class ContactService {
     }
     async delete(id) {
         const result = await this.Contact.findOneAndDelete({
-        _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
+            _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
         });
-    return result.value;
+        return result.value;
     }
-    
+
     async findFavorite() {
         return await this.find({ favorite: true });
     }
     async deleteAll() {
         const result = await this.Contact.deleteMany({});
         return result.deletedCount;
-    }
+        }
+
 }
+
 module.exports = ContactService;
